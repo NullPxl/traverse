@@ -1,19 +1,25 @@
-from traverse import spyonweb, nerdydata, checks
+from traverse import spyonweb, nerdydata, scraper, checks
 import api_keys # Create a file called api_keys.py with the var: spyonweb
 
-domain = "http://example.tld"
+domain = "http://fullmooncalendar.net"
 
 if not checks.validateURL(domain):
     raise Exception("Please supply a url in a valid format: http(s)://example.tld")
 
+scraped_ids = scraper.scrapeMatch(domain)
+
 spyonweb = spyonweb.SpyOnWeb(api_keys.spyonweb, domain)
-codes = spyonweb.getAnalyticsCode()
-spy_domains = spyonweb.getDatafromCode(codes)
+spy_ids = spyonweb.getAnalyticsandAdsense()
 
-nerdydata = nerdydata.NerdyData(codes)
-nd_domains = nerdydata.getDatafromQuery()
+scraped_ids[0].extend(spy_ids[0])
+scraped_ids[1].extend(spy_ids[1])
+all_ids = scraped_ids
+print(f"All ids: {all_ids}")
 
-spy_domains.extend(nd_domains) # combined
+nd = nerdydata.NerdyData(all_ids)
+spy_domains = spyonweb.getDatafromCodes(all_ids)
+nd_domains = nd.getDatafromQuery()
+spy_domains.extend(nd_domains)
 all_domains = list(set(spy_domains))
 
-print(all_domains)
+print(f"{chr(10).join(all_domains)}")

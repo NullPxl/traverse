@@ -5,8 +5,11 @@ class NerdyData:
     # Used when a string or list of strings is provided to search for across sites.
     # Not necessarily just tracking ids, can also be copyright strings or reused code.
 
-    def __init__(self, queries: list):
-        self.queries = [urllib.parse.quote(query) for query in queries]
+    def __init__(self, queries: tuple):
+        queries[0].extend(queries[1]) # combining the lists in the tuple of queries
+        combined = list(set(queries[0]))
+        self.queries = [urllib.parse.quote(query) for query in combined]
+
     
     def getDatafromQuery(self) -> list:
         # Returns a list of domains associated with the queries
@@ -26,5 +29,6 @@ class NerdyData:
         for result in info:
             if result['total'] > 0:
                 for site in range(len(result['sites'])):
+                    print(f"Found {result['sites'][site]['domain']}")
                     results.append(result['sites'][site]['domain'])
         return results

@@ -1,7 +1,9 @@
 # traverse
 Find related domains based off of potentially repeated strings and tracking codes
 
-## To add: Google AdSense, Facebook Pixel, Suggested Google dorks, Scrape WebArchive pages as well as current
+Currently uses spyonweb, nerdydata (and regex) to look for google analytics and adsense ids.
+
+## To add: PublicWWW, Facebook Pixel, Suggested Google dorks, Scrape WebArchive pages as well as current
 
 * https://httparchive.org/ / BigQuery is amazing for things like this, but also very expensive :(
 
