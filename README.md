@@ -1,12 +1,28 @@
-# traverse
-Find related domains based off of potentially repeated strings and tracking codes
+# Traverse
+Instead of focusing on DNS or CT logs, the goal of this tool is to expand on known hosts related to the original domain through searching for instances of repeated code/html and tracking ids across publically available apis/datasets.
 
-Currently uses spyonweb, nerdydata (and regex) to look for google analytics and adsense ids.
+* Initial idea for this came from reading [this bellingcat blog post](https://www.bellingcat.com/resources/how-tos/2015/07/23/unveiling-hidden-connections-with-google-analytics-ids/)
 
-## To add: PublicWWW, Facebook Pixel, Suggested Google dorks, Scrape WebArchive pages as well as current
+Traverse currently uses spyonweb (requires api key), nerdydata (and regex) to look for and retrieve data from google analytics and adsense ids.
+
+## On the TODO list: 
+* Implement PublicWWW
+* Support Facebook Pixel
+* Suggested Google dorks and Query strings (for nerdydata, publicwww, etc.)
+    * copyright strings
+    * custom js libraries
+    * author comments
+    * etc
+* Scrape WebArchive pages
+
+* Recursive search option
+
+## Alternative resources that I (most likely) won't add support for in this tool:
 
 * https://httparchive.org/ / BigQuery is amazing for things like this, but also very expensive :(
 
 * https://xaviesteve.com/domeye/ is also great, but I'll avoid scripting it as it seems to be run and paid for by an individual.
 
 * https://dnslytics.com/reverse-analytics is good but requires payment for most features that separate it from others (no free api)
+
+* https://shodan.io 's `html:"string"` dork could be worth trying, although in my testing it almost never returns anything useful.

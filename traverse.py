@@ -1,7 +1,7 @@
 from traverse import spyonweb, nerdydata, scraper, checks
 import api_keys # Create a file called api_keys.py with the var: spyonweb
 
-domain = "http://fullmooncalendar.net"
+domain = "http://example.tld"
 
 if not checks.validateURL(domain):
     raise Exception("Please supply a url in a valid format: http(s)://example.tld")
