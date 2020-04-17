@@ -5,10 +5,10 @@ class NerdyData:
     # Used when a string or list of strings is provided to search for across sites.
     # Not necessarily just tracking ids, can also be copyright strings or reused code.
 
-    def __init__(self, queries: tuple):
-        queries[0].extend(queries[1]) # combining the lists in the tuple of queries
-        combined = list(set(queries[0]))
-        self.queries = [urllib.parse.quote(query) for query in combined]
+    def __init__(self, queries: list):
+        # queries[0].extend(queries[1]) # combining the lists in the tuple of queries
+        # combined = list(set(queries[0]))
+        self.queries = [urllib.parse.quote(query) for query in queries]
 
     
     def getDatafromQuery(self) -> list:

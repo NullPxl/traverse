@@ -5,23 +5,22 @@ headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
         }
 
-# previously findGA
-def scrapeMatch(domain: str) -> tuple:
-    # Find tracking ids, returns a tuple of lists; currently analytics ids and adsense ids 
+def scrapeMatch(domain: str) -> dict:
+    # Find tracking ids, returns a dict of lists; currently analytics ids and adsense ids 
     print(f"Scraping {domain} for Google Analytics and Adsense ids...")
     p = re.compile(r"(UA-[0-9]+-[0-9]+)|(pub-\d{16})", re.IGNORECASE) 
     page = requests.get(domain, headers=headers).text
     results = p.findall(page)
-    ga_ids = []
-    gadsense_ids = []
+    ids = {"analytics": [], "adsense": []}
     for match in results:
         if match[0]:
             if match[0][-2] == "-":
                 ga_id = match[0][0:-2]
-                print(f"Found {ga_id}")
-                ga_ids.append(ga_id)
-        if match[1]: 
-            print(f"Found {match[1]}")
-            gadsense_ids.append(match[1])
-    return list(set(ga_ids)), list(set(gadsense_ids))
+                ids["analytics"].append(ga_id)
+                print(f"Found: {ga_id} from scraper")
+        if match[1]: # adsense id
+            ids["adsense"].append(match[1])
+            print(f"Found {match[1]} from scraper")
+
+    return ids # {'analytics': ['UA-123456'], 'adsense': ["pub-217321213123..."]}
 
