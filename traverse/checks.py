@@ -11,9 +11,10 @@ def validateURL(domain: str) -> bool:
             r'(?::\d+)?' # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     # https://stackoverflow.com/questions/7160737/python-how-to-validate-a-url-in-python-malformed-or-not
+    if domain == None: return False
     return (re.match(validators, domain) is not None)
 
-def combineLists(*lists):
+def combineLists(*lists) -> list:
     combined_list = []
     for l in lists:
         combined_list.extend(l)

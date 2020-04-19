@@ -7,7 +7,7 @@ class SpyOnWeb:
         self.token = token
         self.domain = domain
 
-    def getAnalyticsandAdsense(self) -> tuple:
+    def getAnalyticsandAdsense(self) -> dict:
         summary_url = f"https://api.spyonweb.com/v1/summary/{self.domain}?access_token={self.token}"
         r = requests.get(summary_url)
         data = r.json()
@@ -40,7 +40,7 @@ class SpyOnWeb:
             raise Exception(f"There was an error: {data['message']}")
     
 
-    def getDatafromCodes(self, ids: dict) -> list:
+    def getDatafromCodes(self, ids: dict) -> dict:
         # Takes a dict of lists of google analytics and adsense codes and return a list of domains
         domains = {"analytics": [], "adsense": []} # keeping it as a dict to track where domains came from, in case analysis is needed
 
