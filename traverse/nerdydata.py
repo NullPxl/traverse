@@ -27,6 +27,6 @@ class NerdyData:
         for result in info:
             if result['total'] > 0:
                 for site in range(len(result['sites'])):
-                    print(f"{result['sites'][site]['domain']}")
-                    results.append(result['sites'][site]['domain'])
+                    # print(f"nerdy data found: {result['sites'][site]['url']}")
+                    results.append(result['sites'][site]['url'])
         return results
