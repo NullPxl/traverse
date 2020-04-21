@@ -11,6 +11,7 @@ os.system('') # let colours be used
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
+    CYAN = '\033[96m'
     OKGREEN = '\033[92m'
     WARNING = '\033[93m'
     FAIL = '\033[91m'
@@ -43,7 +44,7 @@ def main():
         all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"])
         all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"])
         all_ids = {"analytics": all_analytics, "adsense": all_adsense}
-        print(f"All ids: {all_ids}")
+        print(f"{bcolors.CYAN}All ids: {all_ids}{bcolors.ENDC}")
 
         all_ids_list = checks.combineLists(all_ids["analytics"], all_ids["adsense"])
         nd = nerdydata.NerdyData(all_ids_list)
@@ -55,7 +56,7 @@ def main():
         # PublicWWW seems to implement rate limiting (at least for the free version) so for now it will not be included for domain searches.
 
         all_domains = checks.combineLists(spy_domains["analytics"], spy_domains["adsense"], nd_domains)
-        print(f"{bcolors.OKBLUE}{chr(10).join(all_domains)}{bcolors.ENDC}")
+        print(f"{chr(10)}{bcolors.CYAN}{chr(10).join(all_domains)}{bcolors.ENDC}")
     
     if args.string:
         # Searches in nerdydata and publicwww currently.
@@ -65,9 +66,14 @@ def main():
         nd_domains = nd.getDatafromQuery()
         pwww_domains = pwww.getDatafromQuery()
         all_domains = checks.combineLists(nd_domains, pwww_domains)
-        print(f"{bcolors.OKBLUE}{chr(10).join(all_domains)}{bcolors.ENDC}")
+        print(f"{chr(10)}{bcolors.CYAN}{chr(10).join(all_domains)}{bcolors.ENDC}")
 
         print("\nNote that free NerdyData results are limited to 10 rows, and free PublicWWW is limited to their top 3M sites")
 
 if __name__ == "__main__":
+    banner = """
+    traverse
+        - by nullpxl
+    """
+    print(banner)
     main()

@@ -15,18 +15,19 @@ class NerdyData:
         headers = {
                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
                 }
-        info = []
-        print("Querying NerdyData...\n")
+        info = {}
+        print("Querying NerdyData...")
         for q in self.queries:
             r = requests.get(nd_url.replace("THE_QUERY", q), headers=headers)
             data = r.json()
-            # print(data)
-            info.append(data)
-        # print("Got results from NerdyData.\n")
-        results = [] # domains
-        for result in info:
-            if result['total'] > 0:
-                for site in range(len(result['sites'])):
-                    # print(f"nerdy data found: {result['sites'][site]['url']}")
-                    results.append(result['sites'][site]['url'])
+            uq_q = urllib.parse.unquote(str(q))
+            # print(f"\t{uq_q}: {data['total']} results") returns all potential data, not necessarily available to user.
+
+            info[uq_q] = data
+
+        results = []
+        for query, response in info.items():
+            print(f"\t{query}: {len(response['sites'])} results")
+            for site in response['sites']:
+                results.append(site['url'])
         return results
