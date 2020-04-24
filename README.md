@@ -6,9 +6,10 @@ Instead of focusing on DNS or CT logs, the goal of this tool is to expand on kno
 Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api key], [nerdydata](https://www.nerdydata.com/), [publicwww](https://publicwww.com) [free, requires api key], and page scraping to look for and retrieve data from google analytics and adsense ids, or a user supplied string.  
 * This tool is currently still in "beta", and more will come (check out the todo list below for my current ideas)
 
+![search string example output](https://i.imgur.com/V9FIp8D.png)
+![domain search example output](https://i.imgur.com/3IOu3Qt.png)
 
 ## On the TODO list: 
-* Clean up output
 * Implement [Shodan's](https://shodan.io) `html:"string"` for string search, doesn't ever seem to do anything for tracking tags though. 
 * Support Facebook Pixel
 * Support [Google Tag Manager](https://support.google.com/tagmanager/answer/6103696)
@@ -20,9 +21,6 @@ Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api
 * Scrape WebArchive pages
 * Implement [CommonCrawl](http://commoncrawl.org/)
 * Recursive search option
-
-![domain search example output](https://i.imgur.com/oZOnc8i.png)
-![search string example output](https://i.imgur.com/A5zLI5h.png)
 
 ## Alternative resources that I (most likely) won't add support for in this tool:
 

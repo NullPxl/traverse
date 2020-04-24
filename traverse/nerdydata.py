@@ -1,5 +1,6 @@
 import requests
 import urllib.parse
+from .conf import bcolors
 
 class NerdyData:
     # Used when a string or list of strings is provided to search for across sites.
@@ -16,7 +17,7 @@ class NerdyData:
                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
                 }
         info = {}
-        print("Querying NerdyData...")
+        print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying NerdyData...")
         for q in self.queries:
             r = requests.get(nd_url.replace("THE_QUERY", q), headers=headers)
             data = r.json()
@@ -27,7 +28,7 @@ class NerdyData:
 
         results = []
         for query, response in info.items():
-            print(f"\t{query}: {len(response['sites'])} results")
+            print(f"  - {query}: {len(response['sites'])} results")
             for site in response['sites']:
                 results.append(site['url'])
         return results

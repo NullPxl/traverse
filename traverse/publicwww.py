@@ -2,6 +2,7 @@ import api_keys
 import urllib.parse
 import requests
 from time import sleep
+from .conf import bcolors
 
 # Free version of PublicWWW only allows for the top 3,000,000 sites in results (Most popular of 535M pages)
 # Paid versions allow for their entire dataset, but it's $49/m or $490/y
@@ -16,7 +17,7 @@ class PublicWWW:
         headers = {
                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
                 }
-        print("Querying PublicWWW...")
+        print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying PublicWWW...")
         
         info = {}
         for q in self.queries:
@@ -30,11 +31,11 @@ class PublicWWW:
             uq_q = urllib.parse.unquote(str(q))
             data = r.text
             if data == "Wrong API key":
-                print("Invalid PublicWWW API Key provided.")
+                print(f"{bcolors.FAIL}[X]{bcolors.ENDC} Invalid PublicWWW API Key provided.")
                 return []
             else:
                 info[uq_q] = [url for url in data.split("\n") if url]
-                print(f"\t{uq_q}: {len(info[uq_q])} results")
+                print(f"  - {uq_q}: {len(info[uq_q])} results")
         results = []
         for l in info.values():
             results.extend(l)
