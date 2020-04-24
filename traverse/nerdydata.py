@@ -28,7 +28,7 @@ class NerdyData:
 
         results = []
         for query, response in info.items():
-            print(f"  - {query}: {len(response['sites'])} results")
+            print(f"  > {query}: {len(response['sites'])} results")
             for site in response['sites']:
                 results.append(site['url'])
         return results

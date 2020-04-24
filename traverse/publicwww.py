@@ -35,7 +35,7 @@ class PublicWWW:
                 return []
             else:
                 info[uq_q] = [url for url in data.split("\n") if url]
-                print(f"  - {uq_q}: {len(info[uq_q])} results")
+                print(f"  > {uq_q}: {len(info[uq_q])} results")
         results = []
         for l in info.values():
             results.extend(l)

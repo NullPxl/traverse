@@ -77,7 +77,7 @@ def main():
 if __name__ == "__main__":
     banner = """
     traverse
-        - by nullpxl
+        ⁻ ᵇʸ ⁿᵘˡˡᵖˣˡ
     """
     print(banner)
     main()

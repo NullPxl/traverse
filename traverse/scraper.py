@@ -22,10 +22,10 @@ def scrapeMatch(domain: str) -> dict:
             if match[0][-2] == "-":
                 ga_id = match[0][0:-2]
                 ids["analytics"].append(ga_id)
-                print(f"  - Found: {ga_id}")
+                print(f"  > Found: {ga_id}")
         if match[1]: # adsense id
             ids["adsense"].append(match[1])
-            print(f"  - Found: {match[1]}")
+            print(f"  > Found: {match[1]}")
 
     return ids # {'analytics': ['UA-123456'], 'adsense': ["pub-217321213123..."]}
 

@@ -16,19 +16,19 @@ class SpyOnWeb:
         ids = {"analytics": [], "adsense": []}
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Checking SpyOnWeb for {self.domain}...")
         if data["status"] == "found":
-            print(f"  {bcolors.OKGREEN}[+]{bcolors.ENDC} Found {self.domain} on SpyOnWeb...")
+            print(f"{bcolors.OKGREEN}[&]{bcolors.ENDC} Found {self.domain} on SpyOnWeb...")
             try:
                 d = (data["result"]["summary"]).values()
                 items = list(d)[0]['items']
                 if "analytics" in items: 
                     analytics_results = list(items['analytics'])
-                    print(f"  - Google Analytics: {len(analytics_results)} results")
+                    print(f"  > Google Analytics: {len(analytics_results)} results")
                     ids["analytics"].extend(analytics_results)
                 else:
                     analytics_results = []
                 if "adsense" in items: 
                     adsense_results = list(items['adsense'])
-                    print(f"  - Google Adsense: {len(adsense_results)} results")
+                    print(f"  > Google Adsense: {len(adsense_results)} results")
                     ids["adsense"].extend(adsense_results)
                 else:
                     adsense_results = []
@@ -63,7 +63,7 @@ class SpyOnWeb:
                         d = data["result"][id_type][_id]["items"]
                         for k in d.keys():
                             domains[id_type].append(k)
-                        print(f"  - {_id}: {len(domains[id_type])} results")
+                        print(f"  > {_id}: {len(domains[id_type])} results")
                     except KeyError as e:
                         continue
                 elif data["status"] == "not_found": # If the domain has not been scraped by spyonweb
