@@ -3,24 +3,11 @@ Instead of focusing on DNS or CT logs, the goal of this tool is to expand on kno
 
 * Initial idea for this came from reading [this bellingcat blog post](https://www.bellingcat.com/resources/how-tos/2015/07/23/unveiling-hidden-connections-with-google-analytics-ids/)
 
-Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api key], [nerdydata](https://www.nerdydata.com/), [publicwww](https://publicwww.com) [free, requires api key], and page scraping to look for and retrieve data from google analytics and adsense ids, or a user supplied string.  
-* This tool is currently still in "beta", and more will come (check out the todo list below for my current ideas)
+Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api key], [nerdydata](https://www.nerdydata.com/), [publicwww](https://publicwww.com) [free, requires api key], [shodan](https://www.shodan.io/) [free up until a certain amount of use], and page scraping to look for and retrieve data from google analytics and adsense ids, or a user supplied string.
 
+> this output is slightly outdated
 ![search string example output](https://i.imgur.com/V9FIp8D.png)
 ![domain search example output](https://i.imgur.com/3IOu3Qt.png)
-
-## On the TODO list: 
-* Implement [Shodan's](https://shodan.io) `html:"string"` for string search, doesn't ever seem to do anything for tracking tags though. 
-* Support Facebook Pixel
-* Support [Google Tag Manager](https://support.google.com/tagmanager/answer/6103696)
-* Suggested Google dorks and Query strings (for nerdydata, publicwww, etc.)
-    * copyright strings
-    * custom js libraries
-    * author comments
-    * etc
-* Scrape WebArchive pages
-* Implement [CommonCrawl](http://commoncrawl.org/)
-* Recursive search option
 
 ## Alternative resources that I (most likely) won't add support for in this tool:
 
@@ -29,3 +16,14 @@ Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api
 * https://xaviesteve.com/domeye/ is also great, but I'll avoid scripting it as it seems to be run and paid for by an individual.
 
 * https://dnslytics.com/reverse-analytics is good but requires payment for most features that separate it from others (no free api)
+
+## More ideas: 
+* Support Facebook Pixel
+* Suggested Google dorks and Query strings (for nerdydata, publicwww, etc.)
+    * copyright strings
+    * custom js libraries
+    * author comments
+    * etc
+* Scrape WebArchive pages
+* Implement [CommonCrawl](http://commoncrawl.org/)
+* Recursive search option

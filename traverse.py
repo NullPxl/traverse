@@ -1,9 +1,6 @@
-from traverse import spyonweb, nerdydata, scraper, publicwww, checks
+from traverse import spyonweb, nerdydata, scraper, publicwww, shodanapi, checks
 from traverse import conf
 import api_keys 
-# Create a file called api_keys.py that looks like:
-    # spyonweb = "APIKEYHERE"
-    # publicwww = "APIKEYHERE"
 
 import argparse
 import os
@@ -25,10 +22,11 @@ def main():
 
     if not checks.validateURL(args.domain) and args.string == None:
         parser.error("Please supply a url in a valid format: http(s)://example.tld\nOR provide a string: --string \"to search for\"")
-    if not api_keys.spyonweb or not api_keys.publicwww:
+    if not api_keys.spyonweb or not api_keys.publicwww or not api_keys.shodankey:
         print("""Please add your api keys\napi_keys.py:\n
         spyonweb = "apikey"
         publicwww = "apikey"
+        shodankey = "apikey"
         """)
         return
     if args.domain:
@@ -47,13 +45,15 @@ def main():
         all_ids_list = checks.combineLists(all_ids["analytics"], all_ids["adsense"])
         nd = nerdydata.NerdyData(all_ids_list)
         # pwww = publicwww.PublicWWW(api_keys.publicwww, all_ids_list)
+        shodan = shodanapi.ShodanAPI(api_keys.shodankey, all_ids_list)
 
         spy_domains = spy.getDatafromCodes(all_ids) # returns dict
         nd_domains = nd.getDatafromQuery() # returns singular list to keep compatible with just string searches.  May change later.
         # pwww_domains = pwww.getDatafromQuery() # returns singular list like nd_domains
         # PublicWWW seems to implement rate limiting (at least for the free version) so for now it will not be included for domain searches.
+        shodan_domains = shodan.getDatafromQuery()
 
-        all_domains = checks.combineLists(spy_domains["analytics"], spy_domains["adsense"], nd_domains)
+        all_domains = checks.combineLists(spy_domains["analytics"], spy_domains["adsense"], nd_domains, shodan_domains)
         print(f"{chr(10)}{conf.bcolors.CYAN}{chr(10).join(all_domains)}{conf.bcolors.ENDC}")
 
     
@@ -61,10 +61,12 @@ def main():
         # Searches in nerdydata and publicwww currently.
         nd = nerdydata.NerdyData([args.string])
         pwww = publicwww.PublicWWW(api_keys.publicwww, [args.string])
+        shodan = shodanapi.ShodanAPI(api_keys.shodankey, [args.string])
         
         nd_domains = nd.getDatafromQuery()
         pwww_domains = pwww.getDatafromQuery()
-        all_domains = checks.combineLists(nd_domains, pwww_domains)
+        shodan_domains = shodan.getDatafromQuery()
+        all_domains = checks.combineLists(nd_domains, pwww_domains, shodan_domains)
         print(f"{chr(10)}{conf.bcolors.CYAN}{chr(10).join(all_domains)}{conf.bcolors.ENDC}")
 
         print("\nNote that free NerdyData results are limited to 10 rows, and free PublicWWW is limited to their top 3M sites")
