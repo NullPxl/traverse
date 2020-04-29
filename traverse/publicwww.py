@@ -9,18 +9,22 @@ from .conf import bcolors
 
 class PublicWWW:
 
-    def __init__(self, token: str, queries: list):
-        self.queries = [urllib.parse.quote(query) for query in queries]
+    def __init__(self, token: str):
+        self.token = token
 
-    def getDatafromQuery(self) -> list:
-        pwww_url = f"https://publicwww.com/websites/\"THE_QUERY\"/?export=urls&key={api_keys.publicwww}"
+    def getDatafromQuery(self, queries: list) -> list:
+        if not self.token: 
+            print(f"{bcolors.FAIL}[X]{bcolors.ENDC} No API Key Provided")
+            return []
+        queries = [urllib.parse.quote(query) for query in queries]
+        pwww_url = f"https://publicwww.com/websites/\"THE_QUERY\"/?export=urls&key={self.token}"
         headers = {
                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
                 }
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying PublicWWW...")
         
         info = {}
-        for q in self.queries:
+        for q in queries:
             # if len(self.queries) > 2 and q == self.queries[-1]:
             #     # publicwww has rate limiting on what appears to be the api keys for consecutive reqs
             #     # need to get a better way to do this (rotating ips not working :( ))

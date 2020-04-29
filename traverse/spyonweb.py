@@ -46,6 +46,7 @@ class SpyOnWeb:
                 print(f"{bcolors.FAIL}[X]{bcolors.ENDC} Invalid SpyOnWeb API Key provided")
             else:
                 raise Exception(f"There was an error: {data['message']}")
+            return ids
     
 
     def getDatafromCodes(self, ids: dict) -> dict:
@@ -70,6 +71,6 @@ class SpyOnWeb:
                     # print(f"No data found for {_id} in SpyOnWeb")
                     continue
                 elif data["status"] == "error":
-                    print(f"{bcolors.FAIL}[X]{bcolors.ENDC} There was an error with {_id}... Continuing")
+                    print(f"{bcolors.FAIL}[X]{bcolors.ENDC} There was an error with {_id}: {data['message']}")
                     continue
         return domains # the returned dict is not cleaned up, use check.combineLists to do so.

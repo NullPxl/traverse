@@ -1,5 +1,6 @@
 class bcolors:
     HEADER = '\033[95m'
+    GREY = '\033[90m'
     OKBLUE = '\033[94m'
     CYAN = '\033[96m'
     OKGREEN = '\033[92m'
