@@ -1,4 +1,4 @@
-from traverse import spyonweb, nerdydata, scraper, publicwww, shodanapi, checks
+from traverse import spyonweb, scraper, publicwww, shodanapi, checks, webarchive
 from traverse import conf
 import api_keys 
 
@@ -29,41 +29,40 @@ def main():
         shodankey = "apikey"{conf.bcolors.ENDC}
         """)
     
-    nd = nerdydata.NerdyData()
     pwww = publicwww.PublicWWW(api_keys.publicwww)
     shodan = shodanapi.ShodanAPI(api_keys.shodankey)
 
     if args.domain:
         # If you do not want to directly interact with the target domain, do not use the scraper.
         spy = spyonweb.SpyOnWeb(api_keys.spyonweb, args.domain)
+        wa = webarchive.WebArchive(args.domain)
     
         scraped_ids = scraper.scrapeMatch(args.domain) # returns dict
         spy_ids = spy.getAnalyticsandAdsense() # returns dict
+        wa_ids = wa.scrapeWebArchive() # returns dict
 
-        all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"])
-        all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"])
+        all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"], wa_ids["analytics"])
+        all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"], wa_ids["adsense"])
         all_ids = {"analytics": all_analytics, "adsense": all_adsense}
 
         all_ids_list = checks.combineLists(all_ids["analytics"], all_ids["adsense"])
 
         spy_domains = spy.getDatafromCodes(all_ids)
-        nd_domains = nd.getDatafromQuery(all_ids_list)
         shodan_domains = shodan.getDatafromQuery(all_ids_list)
 
         # pwww_domains = pwww.getDatafromQuery()
         # PublicWWW seems to implement rate limiting (at least for the free version) so for now it will not be included for domain searches.
 
-        all_domains = checks.combineLists(spy_domains["analytics"], spy_domains["adsense"], nd_domains, shodan_domains)
+        all_domains = checks.combineLists(spy_domains["analytics"], spy_domains["adsense"], shodan_domains)
         print(f"{chr(10)}{conf.bcolors.CYAN}{chr(10).join(all_domains)}{conf.bcolors.ENDC}")
 
     
     if args.string:
         # Searches in nerdydata, publicwww and shodan currently.
 
-        nd_domains = nd.getDatafromQuery([args.string])
         pwww_domains = pwww.getDatafromQuery([args.string])
         shodan_domains = shodan.getDatafromQuery([args.string])
-        all_domains = checks.combineLists(nd_domains, pwww_domains, shodan_domains)
+        all_domains = checks.combineLists(pwww_domains, shodan_domains)
         print(f"{chr(10)}{conf.bcolors.CYAN}{chr(10).join(all_domains)}{conf.bcolors.ENDC}")
 
         print(f"{chr(10)}{conf.bcolors.WARNING}Note that free NerdyData results are limited to 10 rows, and free PublicWWW is limited to their top 3M sites{conf.bcolors.ENDC}")

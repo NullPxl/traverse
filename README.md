@@ -1,13 +1,18 @@
 # Traverse
-Instead of focusing on DNS or CT logs, the goal of this tool is to expand on known hosts related to the original domain through searching for instances of repeated code/html and tracking ids across publically available apis/datasets.
+Expand on known hosts related to a domain through searching for instances of repeated code/html and tracking ids across publically available data.
 
 * Initial idea for this came from reading [this bellingcat blog post](https://www.bellingcat.com/resources/how-tos/2015/07/23/unveiling-hidden-connections-with-google-analytics-ids/)
 
-Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api key], [nerdydata](https://www.nerdydata.com/), [publicwww](https://publicwww.com) [free, requires api key], [shodan](https://www.shodan.io/) [free up until a certain amount of use], and page scraping to look for and retrieve data from google analytics and adsense ids, or a user supplied string.
+Traverse currently uses 
+* [spyonweb](http://www.spyonweb.com/) [free, requires api key]
+* [publicwww](https://publicwww.com) [free, requires api key], 
+* [shodan](https://www.shodan.io/) [free up until a certain amount of use, but it's quite a lot of use], 
+* [WebArchive](https://web.archive.org/) scraping.
+    * This may take a few minutes depending on how many snapshots of the page there are.
+* Live page scraping
 
-> this output is slightly outdated
-![search string example output](https://i.imgur.com/V9FIp8D.png)
-![domain search example output](https://i.imgur.com/3IOu3Qt.png)
+![domain search example output](https://i.imgur.com/LHb8VYQ.png)
+![search string example output](https://i.imgur.com/8DdvBaB.png)
 
 ## Alternative resources that I (most likely) won't add support for in this tool:
 
@@ -24,6 +29,6 @@ Traverse currently uses [spyonweb](http://www.spyonweb.com/) [free, requires api
     * custom js libraries
     * author comments
     * etc
-* Scrape WebArchive pages
 * Implement [CommonCrawl](http://commoncrawl.org/)
 * Recursive search option
+* https://www.nerdydata.com Used to be implemented (check commit history), but their api now only allows for 50 free requests before $0.15/query, so I took it out (as of now)

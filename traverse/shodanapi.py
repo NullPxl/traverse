@@ -7,6 +7,7 @@ class ShodanAPI():
     
     def getDatafromQuery(self, queries: list) -> list:
         info = {}
+        hosts = []
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying Shodan...")
         try:
             # at the time of testing, using an OR operator just errors out :(
@@ -15,9 +16,11 @@ class ShodanAPI():
                 search_results = self.api.search(f"html:\"{esc_q}\"")
                 if search_results['matches']:
                     for result in search_results['matches']:
-                        hosts = [f"{host}:{result['port']}" for host in result['hostnames'] if result['hostnames']]
-                        ip = f"{result['ip_str']}:{result['port']}" # if you don't want ips, get rid of this and the next line
-                        hosts.append(ip)
+                        if result['hostnames']:
+                            hosts = [f"{host}:{result['port']}" for host in result['hostnames']]
+                        else:
+                            ip = f"{result['ip_str']}:{result['port']}" # if you don't want ips, get rid of this and the next line
+                            hosts.append(ip)
                         if q in info:
                             info[str(q)].extend(hosts)
                         else:
@@ -28,7 +31,7 @@ class ShodanAPI():
                         
         except shodan.APIError as e:
                 print(f"{bcolors.FAIL}[X]{bcolors.ENDC} {e}")
-                return []
+                return hosts
 
         results = []
         for l in info.values():
