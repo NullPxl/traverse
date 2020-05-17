@@ -8,7 +8,6 @@ headers = {
 
 def matcher(page, ids) -> dict:
     # Find tracking ids, returns a dict of lists; currently analytics ids and adsense ids 
-    # print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Scraping {domain} for Google Analytics and Adsense ids...")
     p = re.compile(r"(UA-[0-9]+-[0-9]+)|(pub-\d{16})", re.IGNORECASE)
     results = p.findall(page)
     for match in results:
@@ -25,8 +24,8 @@ def matcher(page, ids) -> dict:
     return ids # {'analytics': ['UA-123456'], 'adsense': ["pub-217321213123..."]}
 
 def scrapeMatch(domain: str) -> dict:
+    # Scrape the live webpage and return the found ids
     ids = {"analytics": [], "adsense": []}
-    # Find tracking ids, returns a dict of lists; currently analytics ids and adsense ids 
     print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Scraping {domain} for Google Analytics and Adsense ids...")
     try: 
         page = requests.get(domain, headers=headers).text

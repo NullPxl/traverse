@@ -3,6 +3,7 @@ import re
 
 
 def validateURL(domain: str) -> bool:
+    # Make sure the url is valid for the requests library
     validators = re.compile(
             r'^(?:http|ftp)s?://' # http:// or https://
             r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
@@ -15,6 +16,7 @@ def validateURL(domain: str) -> bool:
     return (re.match(validators, domain) is not None)
 
 def combineLists(*lists) -> list:
+    # Combine multiple lists into a single one, and remove any duplicates
     combined_list = []
     for l in lists:
         combined_list.extend(l)

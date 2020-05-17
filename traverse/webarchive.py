@@ -17,7 +17,7 @@ class WebArchive:
         self.ids = {"analytics": [], "adsense": []}
     
     def getAllArchives(self):
-        # gets a list of timestamps for all unique pages saved from web archive
+        # Gets a list of timestamps for all unique pages saved from web archive
         r = requests.get(f"https://web.archive.org/cdx/search/cdx?url={self.domain}&fl=timestamp,digest&output=json&showResumeKey=true")
         j = [i for i in r.json() if i]
         seen_digests = []
@@ -42,8 +42,8 @@ class WebArchive:
         
         return res
 
-    # use aiohttp for this
     async def parse(self, session, sem, url):
+        # Scrape each snapshot for google analytics/adsense ids
         user_agent_list = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
         'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',

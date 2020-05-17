@@ -13,6 +13,7 @@ class PublicWWW:
         self.token = token
 
     def getDatafromQuery(self, queries: list) -> list:
+        # Return domains that publicwww has indexed to have the supplied string
         if not self.token: 
             print(f"{bcolors.FAIL}[X]{bcolors.ENDC} No API Key Provided")
             return []

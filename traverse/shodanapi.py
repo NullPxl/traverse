@@ -6,6 +6,7 @@ class ShodanAPI():
         self.api = shodan.Shodan(token)
     
     def getDatafromQuery(self, queries: list):
+        # Return the hosts shodan has indexed to contain the supplied querystring
         domains = {}
         hosts = []
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying Shodan...")

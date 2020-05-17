@@ -10,6 +10,7 @@ class SpyOnWeb:
         self.domain = domain
 
     def getAnalyticsandAdsense(self) -> dict:
+        # Make a summary call to spyonweb to get all known (to spyonweb) google analytics and adsense ids
         summary_url = f"https://api.spyonweb.com/v1/summary/{self.domain}?access_token={self.token}"
         r = requests.get(summary_url)
         data = r.json()
@@ -50,7 +51,7 @@ class SpyOnWeb:
     
 
     def getDatafromCodes(self, ids: dict):
-        # Takes a dict of lists of google analytics and adsense codes and return a list of domains
+        # Takes a dict of lists of google analytics and adsense codes and return domains
         domains = {} # keeping it as a dict to track where domains came from, in case analysis is needed
 
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying SpyOnWeb for ids...")
