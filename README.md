@@ -12,7 +12,9 @@ Traverse currently uses
 * Live page scraping
 
 ![domain search example output](https://i.imgur.com/LHb8VYQ.png)
-![search string example output](https://i.imgur.com/8DdvBaB.png)
+* *`-o` has been changed to `-oS`, meaning output simple (plaintext).  `-oJ` outputs in json*
+
+![search string example output](https://i.imgur.com/FdGjrYZ.png)
 
 ## Alternative resources that I (most likely) won't add support for in this tool:
 

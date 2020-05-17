@@ -49,9 +49,9 @@ class SpyOnWeb:
             return ids
     
 
-    def getDatafromCodes(self, ids: dict) -> dict:
+    def getDatafromCodes(self, ids: dict):
         # Takes a dict of lists of google analytics and adsense codes and return a list of domains
-        domains = {"analytics": [], "adsense": []} # keeping it as a dict to track where domains came from, in case analysis is needed
+        domains = {} # keeping it as a dict to track where domains came from, in case analysis is needed
 
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying SpyOnWeb for ids...")
         for id_type in ids:
@@ -62,15 +62,18 @@ class SpyOnWeb:
                 if data["status"] == "found":
                     try:
                         d = data["result"][id_type][_id]["items"]
-                        for k in d.keys():
-                            domains[id_type].append(k)
-                        print(f"  > {_id}: {len(domains[id_type])} results")
+                        # print(d)
+                        domains[_id] = [k for k in d.keys()]
+                        # for k in d.keys():
+                        #     domains.setdefault(_id, []).append(k)
+                        print(f"  > {_id}: {len(domains[_id])} results")
                     except KeyError as e:
                         continue
                 elif data["status"] == "not_found": # If the domain has not been scraped by spyonweb
-                    # print(f"No data found for {_id} in SpyOnWeb")
+                    domains[_id] = []
+                    print(f"  > {_id}: 0 results")
                     continue
                 elif data["status"] == "error":
                     print(f"{bcolors.FAIL}[X]{bcolors.ENDC} There was an error with {_id}: {data['message']}")
                     continue
-        return domains # the returned dict is not cleaned up, use check.combineLists to do so.
+        return [domains, [v for x in domains.values() for v in x]] # index 0 is dict using ids as keys, 1 is just list of domains

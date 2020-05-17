@@ -22,8 +22,7 @@ def matcher(page, ids) -> dict:
             if match[1] not in ids["adsense"]:
                 ids["adsense"].append(match[1])
                 print(f"  > Found: {match[1]}")
-    if len(ids["analytics"]) != 0 or len(ids["adsense"]) != 0:
-        return ids # {'analytics': ['UA-123456'], 'adsense': ["pub-217321213123..."]}
+    return ids # {'analytics': ['UA-123456'], 'adsense': ["pub-217321213123..."]}
 
 def scrapeMatch(domain: str) -> dict:
     ids = {"analytics": [], "adsense": []}
@@ -35,5 +34,7 @@ def scrapeMatch(domain: str) -> dict:
         print(f"{bcolors.FAIL}[X]{bcolors.ENDC} ERROR making a request to: \"{domain}\"")
         return ids
     ids = matcher(page, ids)
+    if not ids["analytics"] and not ids["adsense"]:
+        print(f"{bcolors.WARNING}[/]{bcolors.ENDC} No matches were found.")
     return ids
 

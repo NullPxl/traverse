@@ -15,6 +15,7 @@ class WebArchive:
     def __init__(self, domain):
         self.domain = domain
         self.ids = {"analytics": [], "adsense": []}
+    
     def getAllArchives(self):
         # gets a list of timestamps for all unique pages saved from web archive
         r = requests.get(f"https://web.archive.org/cdx/search/cdx?url={self.domain}&fl=timestamp,digest&output=json&showResumeKey=true")
@@ -26,15 +27,19 @@ class WebArchive:
                 res.append(time[0])
                 seen_digests.append(time[1])
         
-        while "+" in j[-1][0]: # If there is a resume key (hit limit)
-            resumekey = j[-1][0]
-            r = requests.get(f"https://web.archive.org/cdx/search/cdx?url={self.domain}&fl=timestamp,digest&output=json&showResumeKey=true&resumeKey={resumekey}")
-            j = [i for i in r.json() if i]
-            for time in [time for time in j if len(time[0]) == 14]:
-                if time[1] not in seen_digests:
-                    res.append(time[0])
-                    seen_digests.append(time[1])
-        print(f"  > Found {len(res)} unique archives")
+        try:
+            while "+" in j[-1][0]: # If there is a resume key (hit limit)
+                resumekey = j[-1][0]
+                r = requests.get(f"https://web.archive.org/cdx/search/cdx?url={self.domain}&fl=timestamp,digest&output=json&showResumeKey=true&resumeKey={resumekey}")
+                j = [i for i in r.json() if i]
+                for time in [time for time in j if len(time[0]) == 14]:
+                    if time[1] not in seen_digests:
+                        res.append(time[0])
+                        seen_digests.append(time[1])
+            print(f"  > Found {len(res)} unique archives")
+        except IndexError:
+            print(f"{bcolors.WARNING}[/]{bcolors.ENDC} No archives were found.")
+        
         return res
 
     # use aiohttp for this
@@ -73,15 +78,14 @@ class WebArchive:
                 async with session.get(url, headers=headers) as response:
                     r = await response.read()
                     html = str(r)
-            except client_exceptions.ClientResponseError as e: # TEST THIS: 
+            except client_exceptions.ClientResponseError as e:
                 # https://github.com/aio-libs/aiohttp/pull/4696
-                # print(f"Error: {e}, using requests")
                 r = requests.get(url, headers=headers)
                 html = str(r.content)
             except asyncio.TimeoutError:
-                    return f"timeout error on {url}"
-            # print(html)
-            # print(url)
+                print(f"{bcolors.WARNING}[/]{bcolors.ENDC} Timeout on {url}, continuing.")
+            except Exception as e:
+                print(f"{bcolors.FAIL}[X]{bcolors.ENDC} Error occured on {url}: {e}, skipping.")
             scraped = matcher(html, self.ids)
             if scraped:
                 self.ids = {"analytics": combineLists(self.ids["analytics"], scraped["analytics"]), "adsense": combineLists(self.ids["adsense"], scraped["adsense"])}
@@ -89,7 +93,7 @@ class WebArchive:
     async def getIDs(self):
         tasks = []
         sem = asyncio.Semaphore(5) # don't be mean :)
-        timeout = ClientTimeout(total=15)
+        timeout = ClientTimeout(total=30)
         async with ClientSession(timeout=timeout) as session:
             timestamps = self.getAllArchives()
             # print(timestamps)
@@ -101,7 +105,7 @@ class WebArchive:
         return self.ids
 
     def scrapeWebArchive(self):
-        print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Scraping Archives of {self.domain}...")
+        print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Scraping Archives (web.archive.org) of {self.domain}...")
         loop = asyncio.get_event_loop()
         future = asyncio.ensure_future(self.getIDs())
         ids = loop.run_until_complete(future)

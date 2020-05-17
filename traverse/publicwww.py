@@ -23,7 +23,7 @@ class PublicWWW:
                 }
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Querying PublicWWW...")
         
-        info = {}
+        domains = {}
         for q in queries:
             # if len(self.queries) > 2 and q == self.queries[-1]:
             #     # publicwww has rate limiting on what appears to be the api keys for consecutive reqs
@@ -36,11 +36,9 @@ class PublicWWW:
             data = r.text
             if data == "Wrong API key":
                 print(f"{bcolors.FAIL}[X]{bcolors.ENDC} Invalid PublicWWW API Key provided.")
-                return []
+                return [{}, []]
             else:
-                info[uq_q] = [url for url in data.split("\n") if url]
-                print(f"  > {uq_q}: {len(info[uq_q])} results")
-        results = []
-        for l in info.values():
-            results.extend(l)
-        return results
+                domains[uq_q] = [url for url in data.split("\n") if url]
+                print(f"  > {uq_q}: {len(domains[uq_q])} results")
+        
+        return  [domains, [v for x in domains.values() for v in x]]# index 0 is dict using query as keys, 1 is just list of domains
