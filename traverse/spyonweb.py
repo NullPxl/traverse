@@ -5,19 +5,18 @@ from .conf import bcolors
 
 class SpyOnWeb:
 
-    def __init__(self, token: str, domain: str):
+    def __init__(self, token: str):
         self.token = token
-        self.domain = domain
 
-    def getAnalyticsandAdsense(self) -> dict:
+    def getAnalyticsandAdsense(self, domain) -> dict:
         # Make a summary call to spyonweb to get all known (to spyonweb) google analytics and adsense ids
-        summary_url = f"https://api.spyonweb.com/v1/summary/{self.domain}?access_token={self.token}"
+        summary_url = f"https://api.spyonweb.com/v1/summary/{domain}?access_token={self.token}"
         r = requests.get(summary_url)
         data = r.json()
         ids = {"analytics": [], "adsense": []}
-        print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Checking SpyOnWeb for {self.domain}...")
+        print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Checking SpyOnWeb for {domain}...")
         if data["status"] == "found":
-            print(f"{bcolors.OKGREEN}[&]{bcolors.ENDC} Found {self.domain} on SpyOnWeb...")
+            print(f"  {bcolors.OKGREEN}>{bcolors.ENDC} Found {domain} on SpyOnWeb...")
             try:
                 d = (data["result"]["summary"]).values()
                 items = list(d)[0]['items']
@@ -40,7 +39,7 @@ class SpyOnWeb:
                 print(f"{bcolors.FAIL}[X]{bcolors.ENDC} There was an error parsing SpyOnWeb data. Skipping.")
                 return ids
         elif data["status"] == "not_found": # If the domain has not been scraped by spyonweb
-            print(f"{bcolors.WARNING}[/]{bcolors.ENDC} \"{self.domain}\" was not found on SpyOnWeb.")
+            print(f"{bcolors.WARNING}[/]{bcolors.ENDC} \"{domain}\" was not found on SpyOnWeb.")
             return ids
         elif data["status"] == "error":
             if data["message"] == "unauthorized":

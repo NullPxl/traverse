@@ -1,12 +1,25 @@
 from traverse import spyonweb, scraper, publicwww, shodanapi, checks, webarchive
 from traverse import conf
-import api_keys 
 
 import argparse
 import json
 import os
 
 os.system('') # let colours be used on windows
+
+try:
+# Testing to make sure api keys are present.
+    import api_keys # pylint: disable=import-error
+    try:
+        api_keys.spyonweb
+        api_keys.publicwww
+        api_keys.shodankey
+    except AttributeError:
+        print(conf.api_keys_structure)
+        quit()    
+except ModuleNotFoundError:
+    print(conf.api_keys_structure)
+    quit()
 
 class RunTraverse:
     def __init__(self, parser, args):
@@ -15,25 +28,27 @@ class RunTraverse:
 
         self.pwww = publicwww.PublicWWW(api_keys.publicwww)
         self.shodan = shodanapi.ShodanAPI(api_keys.shodankey)
+        self.spy = spyonweb.SpyOnWeb(api_keys.spyonweb)
 
     def fromDomain(self, domain):
         if not checks.validateURL(domain):
             self.parser.error("Please supply a url in a valid format: http(s)://example.tld\n")
         
-        spy = spyonweb.SpyOnWeb(api_keys.spyonweb, domain)
         wa = webarchive.WebArchive(domain)
     
         # If you do not want to directly interact with the target domain, do not use the (live) scraper.
         scraped_ids = scraper.scrapeMatch(domain)
-        spy_ids = spy.getAnalyticsandAdsense()
+        spy_ids = self.spy.getAnalyticsandAdsense(domain)
         wa_ids = wa.scrapeWebArchive()
 
+        # Cleaning up and combining the data found by the modules
         all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"], wa_ids["analytics"])
         all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"], wa_ids["adsense"])
         all_ids = {"analytics": all_analytics, "adsense": all_adsense}
         all_ids_list = checks.combineLists(all_ids["analytics"], all_ids["adsense"])
 
-        spy_domains = spy.getDatafromCodes(all_ids)
+        # Query services with the discovered ids
+        spy_domains = self.spy.getDatafromCodes(all_ids)
         shodan_domains = self.shodan.getDatafromQuery(all_ids_list)
 
         # PublicWWW seems to implement fairly heavy rate limiting (at least for the free version) so for now it will not be included for domain searches.
@@ -41,6 +56,7 @@ class RunTraverse:
         # pwww_domains = self.pwww.getDatafromQuery(all_ids_list)
         pwww_domains = [{}, []]
         
+        # Generate output types
         all_domains = checks.combineLists(spy_domains[1], shodan_domains[1], pwww_domains[1])
         json_data = {
         str(domain): {
@@ -54,6 +70,8 @@ class RunTraverse:
     def fromString(self, queryString):
         pwww_domains = self.pwww.getDatafromQuery([queryString])
         shodan_domains = self.shodan.getDatafromQuery([queryString])
+        # Queries are passed via list so it's much easier to implement searching strings via a list in a file
+        # (essentially all that needs to be done is add a loop)
 
         all_domains = checks.combineLists(pwww_domains[1], shodan_domains[1])
         json_data = {
@@ -67,13 +85,13 @@ class RunTraverse:
         return [json_data, all_domains]
     
     def outputSimple(self, data, filename):
-        
+        # Extremely simple output (as the name would imply), just puts all the domains in a text file
         with open(str(filename), 'w') as f:
             f.write('\n'.join(data[1]))
         print(f"\n{conf.bcolors.OKGREEN}[+]{conf.bcolors.ENDC} Wrote to {filename}")
     
     def outputJson(self, data, filename):
-
+        # Good for some analysis, will make it easier to attribute ids/strings to domains
         with open(str(filename), 'w') as f:
             json.dump(data[0], f, indent=4)
         print(f"\n{conf.bcolors.OKGREEN}[+]{conf.bcolors.ENDC} Wrote to {filename}")
@@ -82,12 +100,6 @@ class RunTraverse:
 
 def main():
 
-    if not api_keys.spyonweb or not api_keys.publicwww or not api_keys.shodankey:
-        print(f"""{conf.bcolors.GREY}It is highly recommended to add all api keys.\napi_keys.py:\n
-        spyonweb  = "apikey"
-        publicwww = "apikey"
-        shodankey = "apikey"{conf.bcolors.ENDC}
-        """)
     parser = argparse.ArgumentParser(description="Traverse: Find more hosts from repeated tracking codes and strings.")
     p = parser.add_mutually_exclusive_group()
     # parser.add_argument('-l', '--list', help='file of domains to test')

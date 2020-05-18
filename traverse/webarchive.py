@@ -93,7 +93,7 @@ class WebArchive:
     async def getIDs(self):
         tasks = []
         sem = asyncio.Semaphore(5) # don't be mean :)
-        timeout = ClientTimeout(total=30)
+        timeout = ClientTimeout(total=30) # Sometimes redirects may take longer than this.  Raise the value if it is causing problems.
         async with ClientSession(timeout=timeout) as session:
             timestamps = self.getAllArchives()
             # print(timestamps)
