@@ -31,9 +31,10 @@ class RunTraverse:
         self.spy = spyonweb.SpyOnWeb(api_keys.spyonweb)
 
     def fromDomain(self, domain):
+        domain = checks.reformURL([domain])[0]
         if not checks.validateURL(domain):
             self.parser.error("Please supply a url in a valid format: http(s)://example.tld\n")
-        
+    
         wa = webarchive.WebArchive(domain)
     
         # If you do not want to directly interact with the target domain, do not use the (live) scraper.
