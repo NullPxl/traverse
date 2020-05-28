@@ -7,55 +7,74 @@ import os
 
 os.system('') # let colours be used on windows
 
-try:
-# Testing to make sure api keys are present.
-    import api_keys # pylint: disable=import-error
-    try:
-        api_keys.spyonweb
-        api_keys.publicwww
-        api_keys.shodankey
-    except AttributeError:
-        print(conf.api_keys_structure)
-        quit()    
-except ModuleNotFoundError:
-    print(conf.api_keys_structure)
-    quit()
+
+spyonweb_key = ""
+publicwww_key = ""
+shodan_key = ""
+
+if not spyonweb_key or not publicwww_key or not shodan_key:
+    print(f"""{conf.bcolors.GREY}It is recommended to add all api keys (at the top of the file) for best results\n
+    https://api.spyonweb.com/
+    https://publicwww.com/prices.html
+    https://developer.shodan.io/api/requirements{conf.bcolors.ENDC}""")
+
+api_keys = {"spyonweb": spyonweb_key, "publicwww": publicwww_key, "shodan": shodan_key}
+# You may not always want to use every service, or you may not have an api key.
+services = ["spyonweb", "publicwww", "shodan", "live_scrape", "webarchive"]
+
+
+default_dict = {"analytics": [], "adsense": []}
+default_domains = [{}, []]
 
 class RunTraverse:
     def __init__(self, parser, args):
         self.parser = parser
         self.args = args
+        
 
-        self.pwww = publicwww.PublicWWW(api_keys.publicwww)
-        self.shodan = shodanapi.ShodanAPI(api_keys.shodankey)
-        self.spy = spyonweb.SpyOnWeb(api_keys.spyonweb)
+        self.pwww = publicwww.PublicWWW(publicwww_key)
+        self.shodan = shodanapi.ShodanAPI(shodan_key)
+        self.spy = spyonweb.SpyOnWeb(spyonweb_key)
 
     def fromDomain(self, domain):
         domain = checks.reformURL([domain])[0]
         if not checks.validateURL(domain):
             self.parser.error("Please supply a url in a valid format: http(s)://example.tld\n")
-    
-        wa = webarchive.WebArchive(domain)
-    
+        
         # If you do not want to directly interact with the target domain, do not use the (live) scraper.
-        scraped_ids = scraper.scrapeMatch(domain)
-        spy_ids = self.spy.getAnalyticsandAdsense(domain)
-        wa_ids = wa.scrapeWebArchive()
+        scraped_ids = default_dict
+        if "live_scrape" in services:
+            scraped_ids = scraper.scrapeMatch(domain)
+
+        wa_ids = default_dict
+        if "webarchive" in services:
+            wa = webarchive.WebArchive(domain)
+            wa_ids = wa.scrapeWebArchive()
+        
+        spy_ids = default_dict
+        if "spyonweb" in services and api_keys["spyonweb"]:
+            spy_ids = self.spy.getAnalyticsandAdsense(domain)
 
         # Cleaning up and combining the data found by the modules
         all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"], wa_ids["analytics"])
         all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"], wa_ids["adsense"])
         all_ids = {"analytics": all_analytics, "adsense": all_adsense}
         all_ids_list = checks.combineLists(all_ids["analytics"], all_ids["adsense"])
+        
+        # Query services with the discovered ids to return associated domains
+        spy_domains = default_domains
+        if "spyonweb" in services and api_keys["spyonweb"]:
+            spy_domains = self.spy.getDatafromCodes(all_ids)
+        
+        shodan_domains = default_domains
+        if "shodan" in services and api_keys["shodan"]:
+            shodan_domains = self.shodan.getDatafromQuery(all_ids_list)
 
-        # Query services with the discovered ids
-        spy_domains = self.spy.getDatafromCodes(all_ids)
-        shodan_domains = self.shodan.getDatafromQuery(all_ids_list)
-
+        pwww_domains = default_domains
         # PublicWWW seems to implement fairly heavy rate limiting (at least for the free version) so for now it will not be included for domain searches.
-        # Uncomment the following line, and remove the current pwww_domains with the commented out version to force publicwww
-        # pwww_domains = self.pwww.getDatafromQuery(all_ids_list)
-        pwww_domains = [{}, []]
+        # Uncomment the following 2 lines to force publicwww
+        # if "publicwww" in services:
+        #   pwww_domains = self.pwww.getDatafromQuery(all_ids_list)
         
         # Generate output types
         all_domains = checks.combineLists(spy_domains[1], shodan_domains[1], pwww_domains[1])
@@ -63,16 +82,22 @@ class RunTraverse:
         str(domain): {
             "spyonweb": spy_domains[0],
             "shodan": shodan_domains[0],
+            "publicwww": pwww_domains[0]
             }    
         }
         print(f"{chr(10)}{conf.bcolors.CYAN}{chr(10).join(all_domains)}{conf.bcolors.ENDC}")
         return [json_data, all_domains]
     
     def fromString(self, queryString):
-        pwww_domains = self.pwww.getDatafromQuery([queryString])
-        shodan_domains = self.shodan.getDatafromQuery([queryString])
+        
+        pwww_domains = default_domains
+        if "publicwww" in services and api_keys["publicwww"]:
+            pwww_domains = self.pwww.getDatafromQuery([queryString])
+        
+        shodan_domains = default_domains
+        if "shodan" in services and api_keys["shodan"]:
+            shodan_domains = self.shodan.getDatafromQuery([queryString])
         # Queries are passed via list so it's much easier to implement searching strings via a list in a file
-        # (essentially all that needs to be done is add a loop)
 
         all_domains = checks.combineLists(pwww_domains[1], shodan_domains[1])
         json_data = {
