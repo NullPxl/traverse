@@ -21,7 +21,7 @@ if not spyonweb_key or not publicwww_key or not shodan_key:
 api_keys = {"spyonweb": spyonweb_key, "publicwww": publicwww_key, "shodan": shodan_key}
 # You may not always want to use every service, or you may not have an api key.
 services = ["spyonweb", "publicwww", "shodan", "live_scrape", "webarchive"]
-
+# If you do not want to directly interact with the site, remove live_scrape from the services list above.
 
 default_dict = {"analytics": [], "adsense": []}
 default_domains = [{}, []]

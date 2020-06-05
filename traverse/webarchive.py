@@ -86,7 +86,7 @@ class WebArchive:
                 print(f"{bcolors.WARNING}[/]{bcolors.ENDC} Timeout on {url}, continuing.")
             except Exception as e:
                 print(f"{bcolors.FAIL}[X]{bcolors.ENDC} Error occured on {url}: {e}, skipping.")
-            scraped = matcher(html, self.ids)
+            scraped = matcher(html, self.ids, url)
             if scraped:
                 self.ids = {"analytics": combineLists(self.ids["analytics"], scraped["analytics"]), "adsense": combineLists(self.ids["adsense"], scraped["adsense"])}
                 # TODO: print the date of the snapshot it was found on

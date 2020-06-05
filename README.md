@@ -1,15 +1,17 @@
 # Traverse
 Expand on known hosts related to a domain through searching for instances of repeated code/html and tracking ids across publically available data.
 
-* Initial idea for this came from reading [this bellingcat blog post](https://www.bellingcat.com/resources/how-tos/2015/07/23/unveiling-hidden-connections-with-google-analytics-ids/)
+* Initial idea for this came from reading [this bellingcat article](https://www.bellingcat.com/resources/how-tos/2015/07/23/unveiling-hidden-connections-with-google-analytics-ids/)
 
 Traverse currently uses 
 * [spyonweb](http://www.spyonweb.com/) [free, requires api key]
 * [publicwww](https://publicwww.com) [free, requires api key], 
 * [shodan](https://www.shodan.io/) [free up until a certain amount of use, but it's quite a lot of use], 
 * [WebArchive](https://web.archive.org/) scraping.
-    * This may take a few minutes depending on how many snapshots of the page there are.
+    * This may take some time depending on how many snapshots of the page there are.
 * Live page scraping
+
+I wrote a [blog post going into detail on this topic](https://nullpxl.com/post/finding-relationships-between-sites-from-a-page-source/), some ideas referenced in the post have not yet been implemented. 
 
 ![domain search example output](https://i.imgur.com/LHb8VYQ.png)
 * *`-o` has been changed to `-oS`, meaning output simple (plaintext).  `-oJ` outputs in json*
