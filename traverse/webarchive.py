@@ -89,7 +89,6 @@ class WebArchive:
             scraped = matcher(html, self.ids, url)
             if scraped:
                 self.ids = {"analytics": combineLists(self.ids["analytics"], scraped["analytics"]), "adsense": combineLists(self.ids["adsense"], scraped["adsense"])}
-                # TODO: print the date of the snapshot it was found on
 
     async def getIDs(self):
         tasks = []

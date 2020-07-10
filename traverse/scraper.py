@@ -30,11 +30,11 @@ def matcher(page, ids, domain) -> dict:
                 ga_id = match[0][0:-2]
                 if ga_id not in ids["analytics"]:
                     ids["analytics"].append(ga_id)
-                    print(f"  > Found: {ga_id} {getArchiveTimestamp(domain)}")
+                    print(f"  > [Google Analytics]: {ga_id} {getArchiveTimestamp(domain)}")
         if match[1]: # adsense id
             if match[1] not in ids["adsense"]:
                 ids["adsense"].append(match[1])
-                print(f"  > Found: {match[1]} {getArchiveTimestamp(domain)}")
+                print(f"  > [Google Adsense]: {match[1]} {getArchiveTimestamp(domain)}")
         
     return ids # {'analytics': ['UA-123456'], 'adsense': ["pub-217321213123..."]}
 

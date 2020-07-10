@@ -1,4 +1,4 @@
-from traverse import spyonweb, scraper, publicwww, shodanapi, checks, webarchive
+from traverse import host_io, spyonweb, scraper, publicwww, shodanapi, checks, webarchive
 from traverse import conf
 
 import argparse
@@ -11,17 +11,20 @@ os.system('') # let colours be used on windows
 spyonweb_key = ""
 publicwww_key = ""
 shodan_key = ""
+hostio_key = ""
 
-if not spyonweb_key or not publicwww_key or not shodan_key:
+if not spyonweb_key or not publicwww_key or not shodan_key or not hostio_key:
     print(f"""{conf.bcolors.GREY}It is recommended to add all api keys (at the top of the file) for best results\n
     https://api.spyonweb.com/
     https://publicwww.com/prices.html
-    https://developer.shodan.io/api/requirements{conf.bcolors.ENDC}""")
+    https://developer.shodan.io/api/requirements
+    https://host.io/signup{conf.bcolors.ENDC}""")
 
-api_keys = {"spyonweb": spyonweb_key, "publicwww": publicwww_key, "shodan": shodan_key}
+api_keys = {"spyonweb": spyonweb_key, "publicwww": publicwww_key, "shodan": shodan_key, "hostio": hostio_key}
 # You may not always want to use every service, or you may not have an api key.
-services = ["spyonweb", "publicwww", "shodan", "live_scrape", "webarchive"]
+services = ["hostio", "spyonweb", "publicwww", "shodan", "live_scrape"] # "webarchive"
 # If you do not want to directly interact with the site, remove live_scrape from the services list above.
+# webarchive is disabled by default.
 
 default_dict = {"analytics": [], "adsense": []}
 default_domains = [{}, []]
@@ -35,6 +38,7 @@ class RunTraverse:
         self.pwww = publicwww.PublicWWW(publicwww_key)
         self.shodan = shodanapi.ShodanAPI(shodan_key)
         self.spy = spyonweb.SpyOnWeb(spyonweb_key)
+        self.hostio = host_io.HostIO(hostio_key)
 
     def fromDomain(self, domain):
         domain = checks.reformURL([domain])[0]
@@ -46,25 +50,34 @@ class RunTraverse:
         if "live_scrape" in services:
             scraped_ids = scraper.scrapeMatch(domain)
 
+        hostio_ids = default_dict
+        if "hostio" in services and api_keys["hostio"]:
+            hostio_ids = self.hostio.getIDs(domain)
+        
+        spy_ids = default_dict
+        if "spyonweb" in services and api_keys["spyonweb"]:
+            spy_ids = self.spy.getAnalyticsandAdsense(domain)
+        
         wa_ids = default_dict
         if "webarchive" in services:
             wa = webarchive.WebArchive(domain)
             wa_ids = wa.scrapeWebArchive()
         
-        spy_ids = default_dict
-        if "spyonweb" in services and api_keys["spyonweb"]:
-            spy_ids = self.spy.getAnalyticsandAdsense(domain)
 
         # Cleaning up and combining the data found by the modules
-        all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"], wa_ids["analytics"])
-        all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"], wa_ids["adsense"])
+        all_analytics = checks.combineLists(scraped_ids["analytics"], spy_ids["analytics"], wa_ids["analytics"], hostio_ids["analytics"])
+        all_adsense = checks.combineLists(scraped_ids["adsense"], spy_ids["adsense"], wa_ids["adsense"], hostio_ids["adsense"])
         all_ids = {"analytics": all_analytics, "adsense": all_adsense}
         all_ids_list = checks.combineLists(all_ids["analytics"], all_ids["adsense"])
-        
+
         # Query services with the discovered ids to return associated domains
         spy_domains = default_domains
         if "spyonweb" in services and api_keys["spyonweb"]:
             spy_domains = self.spy.getDatafromCodes(all_ids)
+
+        hostio_domains = default_domains
+        if "hostio" in services and api_keys["hostio"]:
+            hostio_domains = self.hostio.getDatafromCodes(all_ids)
         
         shodan_domains = default_domains
         if "shodan" in services and api_keys["shodan"]:
@@ -77,9 +90,10 @@ class RunTraverse:
         #   pwww_domains = self.pwww.getDatafromQuery(all_ids_list)
         
         # Generate output types
-        all_domains = checks.combineLists(spy_domains[1], shodan_domains[1], pwww_domains[1])
+        all_domains = checks.combineLists(hostio_domains[1], spy_domains[1], shodan_domains[1], pwww_domains[1])
         json_data = {
         str(domain): {
+            "hostio": hostio_domains[0],
             "spyonweb": spy_domains[0],
             "shodan": shodan_domains[0],
             "publicwww": pwww_domains[0]

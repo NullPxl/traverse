@@ -16,19 +16,19 @@ class SpyOnWeb:
         ids = {"analytics": [], "adsense": []}
         print(f"{bcolors.OKGREEN}[+]{bcolors.ENDC} Checking SpyOnWeb for {domain}...")
         if data["status"] == "found":
-            print(f"  {bcolors.OKGREEN}>{bcolors.ENDC} Found {domain} on SpyOnWeb...")
+            print(f"  > Found {domain} on SpyOnWeb...")
             try:
                 d = (data["result"]["summary"]).values()
                 items = list(d)[0]['items']
                 if "analytics" in items: 
                     analytics_results = list(items['analytics'])
-                    print(f"  > Google Analytics: {len(analytics_results)} results")
+                    print(f"  > [Google Analytics]: {', '.join(analytics_results)} ({len(analytics_results)} results)")
                     ids["analytics"].extend(analytics_results)
                 else:
                     analytics_results = []
                 if "adsense" in items: 
                     adsense_results = list(items['adsense'])
-                    print(f"  > Google Adsense: {len(adsense_results)} results")
+                    print(f"  > [Google Adsense]: {', '.join(adsense_results)} ({len(adsense_results)} results)")
                     ids["adsense"].extend(adsense_results)
                 else:
                     adsense_results = []
